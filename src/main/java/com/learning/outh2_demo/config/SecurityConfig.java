@@ -3,13 +3,13 @@ package com.learning.outh2_demo.config;
 import com.learning.outh2_demo.service.CustomOidcUserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizationRequestResolver;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
 import org.springframework.security.oauth2.client.oidc.web.logout.OidcClientInitiatedLogoutSuccessHandler;
 import org.springframework.security.oauth2.client.oidc.web.server.logout.OidcClientInitiatedServerLogoutSuccessHandler;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -27,6 +27,11 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
 
         OidcClientInitiatedLogoutSuccessHandler handler = new OidcClientInitiatedLogoutSuccessHandler(clientRegistrationRepository);
+        DefaultOAuth2AuthorizationRequestResolver authorizationRequestResolver =
+                new DefaultOAuth2AuthorizationRequestResolver(clientRegistrationRepository, "/oauth2/authorization");
+
+        authorizationRequestResolver.setAuthorizationRequestCustomizer(builder ->
+                builder.additionalParameters(parameters -> parameters.put("prompt", "login")));
 
         handler.setPostLogoutRedirectUri("{baseUrl}");
 
@@ -40,6 +45,8 @@ public class SecurityConfig {
                 .oauth2Login(oauth2->oauth2
                         .loginPage("/login")
                         .defaultSuccessUrl("/home",true)
+                        .authorizationEndpoint(authorizationEndpoint ->
+                                authorizationEndpoint.authorizationRequestResolver(authorizationRequestResolver))
                         .userInfoEndpoint(
                                 userInfo->userInfo
                                         .oidcUserService(oidcUserService)
