@@ -59,7 +59,6 @@ public class CustomAuthenticator implements Authenticator {
             handleResend(context);
             return;
         }
-
         String otp = context.getHttpRequest()
                 .getDecodedFormParameters()
                 .getFirst("otp");
@@ -67,7 +66,11 @@ public class CustomAuthenticator implements Authenticator {
         String storedOtp = context.getAuthenticationSession().getAuthNote(OTP_NOTE);
         String storedExpiry = context.getAuthenticationSession().getAuthNote(OTP_EXPIRY_NOTE);
         int attempts = getAttemptCount(context);
-
+        System.out.println("=================================");
+        System.out.println("STORED OTP = " + storedOtp);
+        System.out.println("ENTERED OTP = " + otp);
+        System.out.println("EXPIRY = " + storedExpiry);
+        System.out.println("=================================");
         if (storedOtp == null || storedExpiry == null || isExpired(storedExpiry)) {
             context.getEvent().detail("otp", "expired");
             Response challenge = buildChallenge(context, "Your OTP has expired. Please request a new one.", null);
@@ -170,7 +173,10 @@ public class CustomAuthenticator implements Authenticator {
         String otp = generateOtp();
         long nowEpochSeconds = Instant.now(CLOCK).getEpochSecond();
         long expiryEpochSeconds = nowEpochSeconds + OTP_TTL_SECONDS;
-
+        System.out.println("=================================");
+        System.out.println("GENERATED OTP = " + otp);
+        System.out.println("EMAIL = " + user.getEmail());
+        System.out.println("=================================");
         context.getAuthenticationSession().setAuthNote(OTP_NOTE, otp);
         context.getAuthenticationSession().setAuthNote(OTP_EXPIRY_NOTE, Long.toString(expiryEpochSeconds));
         context.getAuthenticationSession().setAuthNote(OTP_LAST_SENT_NOTE, Long.toString(nowEpochSeconds));
