@@ -6,7 +6,7 @@ spring:
           keycloak:
             provider: keycloak
             client-id: demo-client
-            client-secret: ***REMOVED***
+            client-secret: ${KEYCLOAK_CLIENT_SECRET}
             authorization-grant-type: authorization_code
             redirect-url: http://localhost:8080/login/oauth2/code/keycloak
             scope:

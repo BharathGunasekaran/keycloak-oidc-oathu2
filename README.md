@@ -50,10 +50,11 @@ docker run -p 8090:8080 -e KC_BOOTSTRAP_ADMIN_USERNAME=admin -e KC_BOOTSTRAP_ADM
    Set the redirect URI to `http://localhost:8080/login/oauth2/code/keycloak`.
 3. Add client roles **`USER`**, **`MANAGER`** and **`ADMIN`**.
 4. Create test users and assign them roles.
-5. Copy the client secret into `src/main/resources/application.yml`, or better, provide it as an environment variable.
+5. Copy the client secret from the client's **Credentials** tab.
 
 ### 3. Run the app
 ```bash
+export KEYCLOAK_CLIENT_SECRET=your_client_secret
 ./mvnw spring-boot:run
 ```
 Open http://localhost:8080 and log in with one of your test users.
